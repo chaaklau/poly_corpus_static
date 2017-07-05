@@ -1,0 +1,21 @@
+{{#results}}
+<div style="width:100%">
+    <div id="result_scroll_left_{{c}}" class="noselect col col-sm-1">
+        <span class="line_number" title="Corpus: {{code}}&#13;&#10;Article: {{arti}}&#13;&#10;Turn: {{line_num}}">#{{c}}</span>
+    </div>
+    <div id="result_row_{{c}}" class="result-row col col-sm-10" style="text-align:left;">
+        <span id="result_row_{{c}}_before" class="text text-before">{{{pre}}}</span>
+        <span id="result_row_{{c}}_keyword" class="text text-keyword">{{{key}}}</span>
+        <span id="result_row_{{c}}_after" class="text text-after">{{{post}}}</span>
+    </div>
+    <div id="result_scroll_right_{{c}}" class="noselect col col-sm-1">
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#fullTextBox"
+            onclick="loadArticle ('{{code}}','{{genre}}','{{arti}}','{{informant}}', {{line_num}}-3, {{line_num}}+3, '{{search}}', '{{highlight}}')">
+      <span class="glyphicon glyphicon-list-asterisk"></span>
+    </button>
+    </div>
+</div>
+<br>
+{{/results}}

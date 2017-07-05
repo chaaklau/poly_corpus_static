@@ -1,0 +1,280 @@
+<html>
+<head>
+    <title>PolyU Corpora</title>
+    <meta charset="UTF-8">
+    <!--jQuery CDN 
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script> -->
+    <!--bootstrap CDN 
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">-->
+	<!-- mustache CDN 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>-->
+
+    <!--Use local Jquery and bootstrap and mustache -->
+    <script src="static/jquery/jquery-1.11.2.min.js"></script>
+    <script src="static/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script src="static/bootstrap/js/bootstrap.min.js"></script>
+    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="static/mustache/mustache.js"></script>
+    
+    <script>
+    		var corpora;
+    		var code;
+    		var files;
+    		var articles = {};
+            var done_corpora = false;
+            var done_files = false;
+            var done_articles = {};
+            
+            $.getJSON('corpora.json', function(data){
+            	corpora = data;
+            	done_corpora = true;
+            	if (done_corpora && done_files) corpus_selected();
+            }
+            );
+            
+            $.getJSON('files.json', function(data){
+            	files = data;
+            	done_files = true;
+            	if (done_corpora && done_files) corpus_selected();
+            }
+            );            
+            
+			function corpus_selected(){
+                var url = document.location.toString();
+                code = "can";
+				if (url.match('#')) {
+					code = url.split('#')[1];
+					if(corpora[code] == undefined) {code = "can";}
+				}
+			    loadLeftPanel(code) ;
+			    loadArticles(code);
+				window.scrollTo(0, 0);
+			}
+            
+            function loadArticles(code){
+            	if (articles[code] == undefined){
+            		if (files[code]){
+            			//load articles now
+            			done_articles[code] = 0;
+            			articles[code]={};
+            			files[code].forEach(function(file,i){
+            				$.get('raw/' + code + '/' + file, function(lines){
+            					after_split = lines.split("\r");
+            					var meta = after_split.shift().split("|");
+            					var arti = meta[0].trim();
+            					var genre = meta[1].trim();
+            					var informant = meta[6].trim();
+            					if (articles[code][genre] == undefined) {articles[code][genre] = [];}
+            					articles[code][genre].push({"arti": arti, "genre":genre, "informant":informant, "lines": after_split});
+            					done_articles[code]++;
+								if (done_articles[code] == files[code].length) {
+					            	$.get('file_panel.mst', function(template) {
+					            		var rendered ="";
+					            		$(Object.keys(articles[code])).each(function(i,key){
+					            			rendered = rendered +Mustache.render(template, {"looking_at": corpora[code], "genre": key, "articles": articles[code][key]}); 
+					            		});
+							        	$('#file_listing').html(rendered);            		
+					            	});
+								}            					            					
+            				});
+            			});
+            		}
+            	}
+            }
+            
+            function loadArticle(code, genre, arti, informant, from, to, searchString, highlightString) {
+            	var partial = !(from == undefined || to == undefined);
+            	var total_length = 0;
+            	$('#myModalLabel').html(genre + " " + informant + " (" + arti + ") <small>" + corpora[code].name  + "</small>");
+            	var lines = "";
+            	$(articles[code][genre]).each(function(i,key){
+					if (key.arti == arti) {
+						total_length = key.lines.length - 1;
+						if (from == undefined) { from = 0; }
+            			if (to == undefined) { to = total_length; }
+						for (var i = from; i <= to; ++i){
+							lines = lines + "<p>" + i + " --" + 
+								key.lines[i]
+									.replaceAll(highlightString,"<span class='highlight_string'>" + highlightString + "</span>")
+									.replaceAll(searchString,"<span class='searched_string'>" + searchString + "</span>")
+								 + "</p>";
+						}
+					}            		
+            	}
+            	);
+            	if (lines=="") {lines = "Article Not Found!";}
+            	else if (partial){
+					lines = lines + '<div id="showFull" style="width:100%;"><a href="#" id="showFull" onclick="loadArticle(\''+ code + '\',\'' + genre + '\',\'' + arti + '\',\'' + informant + '\',' + 0 + ',' + total_length + ',\'' + searchString + '\',\'' + highlightString + '\');">SHOW FULL TEXT</a></div>'
+            	}
+				$('#realText').html(lines);
+            	toggleArrows();
+            }
+            
+            function loadLeftPanel(code){
+			    $.get('home_template.mst', function(template) {
+			        var rendered = Mustache.render(template, {"looking_at": corpora[code], "corpora": Object.keys(corpora).map(function (key) { return corpora[key]; })});
+			        $('#target').html(rendered);
+	                $('#resultPanel').hide();
+	                $("#show_tag").change(function() {
+	                    toggleTag();
+	                });
+	                togglePanel("searchPanel"); 
+			    });
+            }
+            
+            function toggleTag(){
+                if ($("#show_tag").is(":checked")) {
+                    $(".tag").show();
+                } else {
+                    $(".tag").hide();
+                }
+                center();
+            }
+            function center(){
+                //Center around the searched string
+                $.each($(".result-row"), function(i,val) { 
+                    var x = $(this);
+                    x.find(".row-placeholder").each(function(){this.remove()});
+                    var row_width = x.width();
+                    var target_scroll_pos = x.children().slice(0).outerWidth() + x.children().slice(1).outerWidth() / 2 - row_width / 2;
+                    var row_content_width = 0;
+                    $.each(x.find(".text"),function(){ row_content_width += $(this).outerWidth();});
+                    if (target_scroll_pos < 0) {
+                        x.prepend("<span class='row-placeholder' style='margin-left:"+(target_scroll_pos*-1)+"'></span>");
+                    }
+                    if (row_content_width - target_scroll_pos < row_width) {
+                        //console.log(row_content_width - target_scroll_pos + "," + row_width)
+                        x.append("<span class='row-placeholder' style='margin-left:"+(-row_content_width + target_scroll_pos + row_width )+"'></span>");
+                    }
+                    x.scrollLeft(target_scroll_pos);
+                });
+            }
+            function showResults(searchString, highlightString, windowSize){
+                $('#resultPanel').show();
+                $('#queryString').text("Keyword: " + searchString);
+                //$('#queryCategory').text("Category: " + category );
+                $('#queryHighlight').text("Highlight: " + highlightString );
+                //$('#queryWindowSize').text("Window: " + windowSize );
+                if (highlightString == "") {
+                    highlightString = "___"
+                }
+
+			    $.get('search.mst', function(template) {
+			        var rendered = Mustache.render(template, doSearch(searchString, highlightString, windowSize));
+	                $("#resultBox").html(rendered);
+	                center();
+			    });
+            }
+            
+            function doSearch(searchString, highlightString, windowSize) {
+            	var search_count = 0;
+            	var final = {"code":code, "search": searchString, "highlight":highlightString, results:[]};
+            	for (var i = 0; i < Object.keys(articles[code]).length; ++i) {
+            		var key = Object.keys(articles[code])[i];
+            		for (var j = 0; j < articles[code][key].length; ++j) {
+            			var art = articles[code][key][j];
+            			for (var k = 0; k < art.lines.length; ++k) {
+            				var this_line = art.lines[k];
+            				var loc = this_line.indexOf(searchString); 
+            				if (loc != -1) {
+            					//found
+            					var entry = {
+				            		"c": search_count++,
+				            		"arti":art.arti,
+				            		"pre": this_line.substr(0,loc).replaceAll(highlightString,"<span class='highlight_string'>" + highlightString + "</span>"),
+				            		"key": this_line.substr(loc,searchString.length),
+				            		"post": this_line.substr(loc+searchString.length, this_line.length-loc-searchString.length-1).replaceAll(highlightString,"<span class='highlight_string'>" + highlightString + "</span>"),
+				            		"line_num": k,
+				            		"genre": key,
+				            		"informant": art.informant
+            					}
+            					final.results.push(entry)
+            				}
+            			}
+            		}
+            	}
+            	return final;
+            }
+
+			String.prototype.replaceAll = function(search, replacement) {
+			    var target = this;
+			    return target.split(search).join(replacement);
+			};
+
+            function togglePanel(panelName) {
+                $.each($("#main_panel").find(".top_level_panel"), function(){
+                    $(this).hide();
+                });
+                $.each($("#main_nav").find(".active"), function(){
+                    $(this).removeClass("active");
+                });
+                $("#"+panelName+"Button").addClass("active");
+                $("#"+panelName).show();
+                center();
+            }
+
+
+            function showPrev(){
+            }
+
+            function showNext(){
+            }
+
+            function toggleArrows(){
+            }
+
+    </script>
+    <style>
+        strong { color: #FF0000; }
+        .searched_string { color: #FF0000; }
+        .highlight_string { color : #00AAAA; }
+        .text-keyword { color: #FF0000 }
+        .tag { color: #AAAAAA; }
+        h1, h2 {font-weight: bold}
+        #title_panel { display: block}
+        .result-row { overflow-x: auto; white-space: nowrap; height:20px;}
+        .result-row::-webkit-scrollbar { display: none; }
+        .panel-title { font-size: 1.3em !important; font-family:Verdana, Charcoal, sans-serif !important; font-weight:
+        bold; }
+        .top_level_panel { height: 90%; overflow : hidden; padding-bottom: 20px;}
+        .top_level_panel_body { height: 93%; overflow : auto; }
+        .corpus_description { font-size: 1.1em; }
+        .corpus_title { font-family:Verdana, Charcoal, sans-serif;}
+        .corpus_title_box { position: relative; padding: 20px; }
+        .corpus_title_bg { content : ""; display: block; position: absolute;
+        top: 0; left: 0; 
+        width: 100%; height: 100%;
+        opacity: 0.08; filter: alpha(opa1city=8); z-index:-1; border-radius: 40px; }
+        .noselect { -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none;
+        user-select: none; }
+        ::-webkit-scrollbar { width: 18px; }
+        ::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { border-radius: 10px; -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); }
+
+    </style>
+</head>
+<body onhashchange="corpus_selected()">
+	<div id="target"></div>
+
+<!-- Modal -->
+<div class="modal fade" id="fullTextBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     data-keyboard="false">
+    <div class="modal-dialog" style="width: 60%; height:90%; overflow-y:hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel" width="50%">Corpus Display</h4>
+            </div>
+            <div class="modal-body" id="fullTextBoxBody" style="max-height:90%; overflow-y:auto">
+                <!--div id="showPrevDiv" style="width:100%;"><a href="#" id="showPrev" onclick="showPrev();">&lt;&lt;</a></div-->
+                <div id="realText"><h1>test</h1></div>
+                <!--div id="showNextDiv"  style="width:100%;"><a href="#" id="showNext" onclick="showNext();">&gt;&gt;</a></div-->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

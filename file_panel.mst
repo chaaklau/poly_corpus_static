@@ -1,0 +1,14 @@
+<div class="panel col-md-3">
+<h4 style="font-color:#444400;"><small>{{genre}}</small></h4>
+        {{#articles}}
+        <ul>
+            <li>
+            <a href="#" data-toggle="modal" data-value="{{arti}}"
+                   data-target="#fullTextBox" 
+                   onclick="loadArticle ('{{looking_at.code}}','{{genre}}','{{arti}}','{{informant}}')">
+                   <small>{{informant}}</small>
+            </a>
+            </li>
+        </ul>
+    	{{/articles}}
+</div>
