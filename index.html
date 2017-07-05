@@ -106,7 +106,7 @@
             	);
             	if (lines=="") {lines = "Article Not Found!";}
             	else if (partial){
-					lines = lines + '<div id="showFull" style="width:100%;"><a href="#" id="showFull" onclick="loadArticle(\''+ code + '\',\'' + genre + '\',\'' + arti + '\',\'' + informant + '\',' + 0 + ',' + total_length + ',\'' + searchString + '\',\'' + highlightString + '\');">SHOW FULL TEXT</a></div>'
+					lines = lines + '<div id="showFull" style="width:100%;"><a id="showFull" onclick="loadArticle(\''+ code + '\',\'' + genre + '\',\'' + arti + '\',\'' + informant + '\',' + 0 + ',' + total_length + ',\'' + searchString + '\',\'' + highlightString + '\');">SHOW FULL TEXT</a></div>'
             	}
 				$('#realText').html(lines);
             	toggleArrows();
