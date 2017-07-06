@@ -1,5 +1,5 @@
 <div class="panel col-md-3">
-<h4 style="font-color:#444400;"><small>{{genre}}</small></h4>
+<h4 style="font-color:#444400;"><small>{{genre_d}}</small></h4>
         {{#articles}}
         <ul>
             <li>

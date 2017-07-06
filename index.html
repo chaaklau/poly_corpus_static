@@ -64,7 +64,7 @@
             					after_split = lines.split("\r");
             					var meta = after_split.shift().split("|");
             					var arti = meta[0].trim();
-            					var genre = meta[1].trim();
+                                var genre = meta[1].trim().replaceAll(' ','_');
             					var informant = meta[6].trim();
             					if (articles[code][genre] == undefined) {articles[code][genre] = [];}
             					articles[code][genre].push({"arti": arti, "genre":genre, "informant":informant, "lines": after_split});
@@ -73,7 +73,7 @@
 					            	$.get('file_panel.mst', function(template) {
 					            		var rendered ="";
 					            		$(Object.keys(articles[code])).each(function(i,key){
-					            			rendered = rendered +Mustache.render(template, {"looking_at": corpora[code], "genre": key, "articles": articles[code][key]}); 
+					            			rendered = rendered +Mustache.render(template, {"looking_at": corpora[code], "genre": key, "genre_d": key.replaceAll("_"," "), "articles": articles[code][key]}); 
 					            		});
 							        	$('#file_listing').html(rendered);            		
 					            	});
