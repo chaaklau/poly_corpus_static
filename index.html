@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>PolyU Corpora</title>
@@ -60,12 +61,16 @@
             			done_articles[code] = 0;
             			articles[code]={};
             			files[code].forEach(function(file,i){
-            				$.get('raw/' + code + '/' + file, function(lines){
+            				$.ajax({
+            					url: 'raw/' + code + '/' + file , 
+            					data: '',
+            					mimeType: 'text/plain; charset=UTF-16',
+            					success: function(lines) {
             					after_split = lines.split("\r");
             					var meta = after_split.shift().split("|");
-            					var arti = meta[0].trim();
-                                var genre = meta[1].trim().replaceAll(' ','_');
-            					var informant = meta[6].trim();
+            					var arti = meta[0].replace(/^\s+|\s+$/g, '');
+                                var genre = meta[1].replace(/^\s+|\s+$/g, '').replace(" ","_");
+            					var informant = meta[6].replace(/^\s+|\s+$/g, '');
             					if (articles[code][genre] == undefined) {articles[code][genre] = [];}
             					articles[code][genre].push({"arti": arti, "genre":genre, "informant":informant, "lines": after_split});
             					done_articles[code]++;
@@ -73,11 +78,12 @@
 					            	$.get('file_panel.mst', function(template) {
 					            		var rendered ="";
 					            		$(Object.keys(articles[code])).each(function(i,key){
-					            			rendered = rendered +Mustache.render(template, {"looking_at": corpora[code], "genre": key, "genre_d": key.replaceAll("_"," "), "articles": articles[code][key]}); 
+					            			rendered = rendered +Mustache.render(template, {"looking_at": corpora[code], "genre": key, "genre_d": key.replace("_"," "), "articles": articles[code][key]}); 
 					            		});
 							        	$('#file_listing').html(rendered);            		
 					            	});
 								}            					            					
+            					}
             				});
             			});
             		}
