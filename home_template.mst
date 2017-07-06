@@ -1,121 +1,120 @@
 <div style="margin-top:1em;">
-    <div id='title_panel' class="col-sm-5">
-        <div id="title_panel_top" class="corpus_title_box">
-            <div class="corpus_title_bg" style="background-image:url('static/pic/corpus_{{looking_at.code}}.jpg');"></div>
-            <div class="corpus_title">
-                <h2>{{looking_at.proj}}&nbsp;
-                    <small>({{looking_at.name}})</small>
-                </h2>
-                <div class="corpus_description">{{{looking_at.desc}}}</div>
-            </div>
+  <div id='title_panel' class="col-sm-5">
+    <div id="title_panel_top" class="corpus_title_box">
+      <div class="corpus_title_bg" style="background-image:url('static/pic/corpus_{{looking_at.code}}.jpg');"></div>
+      <div class="corpus_title">
+        <h2>{{looking_at.proj}}&nbsp;
+          <small>({{looking_at.name}})</small>
+        </h2>
+        <div class="corpus_description">{{{looking_at.desc}}}</div>
+      </div>
 
-            <div class="corpus_pages center">
-                <button type="button" class="btn btn-success" onclick="togglePanel('acknowledgementPanel');">
-                    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;Acknowledgement
-                </button>
-                <button type="button" class="btn btn-info" onclick="togglePanel('contactPanel');">
-                    <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>&nbsp;Contacts
-                </button>
-                <button type="button" class="btn btn-warning" onclick="togglePanel('filePanel');">
-                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Files
-                </button>
-                <button type="button" class="btn btn-default" onclick="togglePanel('searchPanel');">
-                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Search
-                </button>
-            </div>
+      <div class="corpus_pages center">
+        <button type="button" class="btn btn-success" onclick="togglePanel('acknowledgementPanel');">
+          <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;Acknowledgement
+        </button>
+        <button type="button" class="btn btn-info" onclick="togglePanel('contactPanel');">
+          <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>&nbsp;Contacts
+        </button>
+        <button type="button" class="btn btn-warning" onclick="togglePanel('filePanel');">
+          <span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Files
+        </button>
+        <button type="button" class="btn btn-default" onclick="togglePanel('searchPanel');">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Search
+        </button>
+      </div>
 
-        </div>
-        <div id="title_panel_bottom" class="corpora_list">
-            <div class="other_corpora">
-                <h3>Go to other corpora</h3>
-                <ul>
-                    {{#corpora}}
-                    <li><a href="#{{code}}">{{proj}}:&nbsp;{{name}}</a></li>
-                    {{/corpora}}
-                </ul>
-            </div>
-        </div>
     </div>
-    <div id='main_panel' class="col-sm-7">
-        <!-- NAV bar
-        <ul id="main_nav" class="nav nav-tabs">
-            <li id="acknowledgementPanelButton" class="active"><a href="#" class="noselect icon-bar" onclick="togglePanel('acknowledgementPanel');"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;Acknowledgement</a></li>
-            <li id="contactPanelButton" ><a href="#" class="noselect" onclick="togglePanel('contactPanel');"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span>&nbsp;Contacts</a></li>
-            <li id="filePanelButton" ><a href="#" class="noselect" onclick="togglePanel('filePanel');"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Files</a></li>
-            <li id="searchPanelButton" ><a href="#" class="noselect" onclick="togglePanel('searchPanel');"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Search</a></li>
+    <div id="title_panel_bottom" class="corpora_list">
+      <div class="other_corpora">
+        <h3>Go to other corpora</h3>
+        <ul>
+          {{#corpora}}
+          <li><a href="#{{code}}">{{proj}}:&nbsp;{{name}}</a></li>
+          {{/corpora}}
         </ul>
-        -->
-        <div id="main_panel_body">
-            <div id="acknowledgementPanel" class="panel panel-success top_level_panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;Acknowledgement
-                    </h3>
-                </div>
-                <div id="acknowledgementPanelBody" class="panel-body corpus_description top_level_panel_body">
-                    {{{looking_at.ack}}}
-                </div>
-            </div>
-            <div id="contactPanel" class="panel panel-info top_level_panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span>&nbsp;Contacts
-                    </h3>
-                </div>
-                <div id="contactPanelBody" class="panel-body corpus_description top_level_panel_body">
-                    {{{looking_at.contact}}}
-                </div>
-            </div>
-            <div id="filePanel" class="panel panel-warning top_level_panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Files
-                    </h3>
-                </div>
-                <div id="filePanelBody" class="panel-body corpus_description top_level_panel_body">
-                	<h3>{{looking_at.lang}}</h3>
-					<div id="file_listing"></div>
-                </div>
-            </div>
-            <div id='searchPanel' class="panel panel-default top_level_panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Search
-                    </h3>
-                </div>
-                <div class="input-group panel-heading"
-                     style="position:relative; display:float; background-color: #FFEEFF">
-                    <input id="searchString" type="text" class="form-control" placeholder="Keyword"
-                           style="width:40%; margin-right:1em;">
-                    <input id="categoryString" type="text" class="form-control" placeholder="Keyword"
-                           style="display:none">
-                    <input id="highlightString" type="text" class="form-control" placeholder="Highlight"
-                           style="width:40%">
-                    <input id="windowSize" type="number" class="form-control" placeholder="Window" value="30"
-                           style="display:none">
-                    <!-- Defaulting window size to 10, as user is allowed to click and display full text -->
-                            <span class="input-group-btn">
-                                <button class="btn btn-primary" type="button" onclick=
-                                        "showResults($('#searchString').val(),$('#highlightString').val(),$('#windowSize').val());">
-                                    Go!
-                                </button>
-                            </span>
-                </div>
-                <!-- /input-group -->
-
-                <div id='searchPanelBody' class="panel-body top_level_panel_body" style="height: 85%;">
-                    <div id='resultPanel'>
-                        <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>&nbsp;Search Result
-                        <strong><span id="queryString" class="label label-default"></span>&nbsp;
-                            <!--span id="queryCategory" class="label label-primary"></span>&nbsp;-->
-                            <span id="queryHighlight" class="label label-warning"></span>&nbsp;
-                            <!--span id='queryWindowSize' class="label label-success"></span>-->
-                        </strong>
-                        <!--input id="show_tag" type="checkbox" checked data-toggle="toggle" data-size="small"  data-on="Showing tags" data-off="No tags" data-onstyle="success" data-offstyle="warning"-->
-                        <hr>
-                        <div id='resultBox'>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-</div>
+  </div>
+  <div id='main_panel' class="col-sm-7">
+    <!-- NAV bar
+    <ul id="main_nav" class="nav nav-tabs">
+      <li id="acknowledgementPanelButton" class="active"><a href="#" class="noselect icon-bar" onclick="togglePanel('acknowledgementPanel');"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;Acknowledgement</a></li>
+      <li id="contactPanelButton" ><a href="#" class="noselect" onclick="togglePanel('contactPanel');"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span>&nbsp;Contacts</a></li>
+      <li id="filePanelButton" ><a href="#" class="noselect" onclick="togglePanel('filePanel');"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Files</a></li>
+      <li id="searchPanelButton" ><a href="#" class="noselect" onclick="togglePanel('searchPanel');"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Search</a></li>
+    </ul>
+    -->
+    <div id="main_panel_body">
+      <div id="acknowledgementPanel" class="panel panel-success top_level_panel">
+        <div class="panel-heading">
+          <h3 class="panel-title"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;Acknowledgement
+          </h3>
+        </div>
+        <div id="acknowledgementPanelBody" class="panel-body corpus_description top_level_panel_body">
+          {{{looking_at.ack}}}
+        </div>
+      </div>
+      <div id="contactPanel" class="panel panel-info top_level_panel">
+        <div class="panel-heading">
+          <h3 class="panel-title"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span>&nbsp;Contacts
+          </h3>
+        </div>
+        <div id="contactPanelBody" class="panel-body corpus_description top_level_panel_body">
+          {{{looking_at.contact}}}
+        </div>
+      </div>
+      <div id="filePanel" class="panel panel-warning top_level_panel">
+        <div class="panel-heading">
+          <h3 class="panel-title"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Files
+          </h3>
+        </div>
+        <div id="filePanelBody" class="panel-body corpus_description top_level_panel_body">
+          <h3>{{looking_at.lang}}</h3>
+          <div id="file_listing"></div>
+        </div>
+      </div>
+      <div id='searchPanel' class="panel panel-default top_level_panel">
+        <div class="panel-heading">
+          <h3 class="panel-title"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Search
+          </h3>
+        </div>
+        <div class="input-group panel-heading"
+           style="position:relative; display:float; background-color: #FFEEFF">
+          <input id="searchString" type="text" class="form-control" placeholder="Keyword"
+               style="width:40%; margin-right:1em;">
+          <input id="categoryString" type="text" class="form-control" placeholder="Keyword"
+               style="display:none">
+          <input id="highlightString" type="text" class="form-control" placeholder="Highlight"
+               style="width:40%">
+          <input id="windowSize" type="number" class="form-control" placeholder="Window" value="30"
+               style="display:none">
+          <!-- Defaulting window size to 10, as user is allowed to click and display full text -->
+              <span class="input-group-btn">
+                <button class="btn btn-primary" type="button" onclick=
+                    "showResults($('#searchString').val(),$('#highlightString').val(),$('#windowSize').val());">
+                  Go!
+                </button>
+              </span>
+        </div>
+        <!-- /input-group -->
 
+        <div id='searchPanelBody' class="panel-body top_level_panel_body" style="height: 85%;">
+          <div id='resultPanel'>
+            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>&nbsp;Search Result
+            <strong><span id="queryString" class="label label-default"></span>&nbsp;
+              <!--span id="queryCategory" class="label label-primary"></span>&nbsp;-->
+              <span id="queryHighlight" class="label label-warning"></span>&nbsp;
+              <!--span id='queryWindowSize' class="label label-success"></span>-->
+            </strong>
+            <!--input id="show_tag" type="checkbox" checked data-toggle="toggle" data-size="small"  data-on="Showing tags" data-off="No tags" data-onstyle="success" data-offstyle="warning"-->
+            <hr>
+            <div id='resultBox'>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
