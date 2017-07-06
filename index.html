@@ -148,11 +148,11 @@
           var row_content_width = 0;
           $.each(x.find(".text"),function(){ row_content_width += $(this).outerWidth();});
           if (target_scroll_pos < 0) {
-            x.prepend("<span class='row-placeholder' style='margin-left:"+(target_scroll_pos*-1)+"'></span>");
+            x.prepend("<span class='row-placeholder' style='margin-left:"+(target_scroll_pos*-1)+"px'></span>");
           }
           if (row_content_width - target_scroll_pos < row_width) {
             //console.log(row_content_width - target_scroll_pos + "," + row_width)
-            x.append("<span class='row-placeholder' style='margin-left:"+(-row_content_width + target_scroll_pos + row_width )+"'></span>");
+            x.append("<span class='row-placeholder' style='margin-left:"+(-row_content_width + target_scroll_pos + row_width )+"px'></span>");
           }
           x.scrollLeft(target_scroll_pos);
         });
@@ -168,8 +168,12 @@
         }
 
         $.get('search.mst', function(template) {
-          var rendered = Mustache.render(template, doSearch(searchString, highlightString, windowSize));
-          $("#resultBox").html(rendered);
+          var final = doSearch(searchString, highlightString, windowSize);
+          if (final.results.length == 0) {
+            $("#resultBox").html("<h1>Nothing found.</h1>");
+          } else {
+            $("#resultBox").html(Mustache.render(template, final));          	
+          }
           center();
         });
       }
@@ -240,8 +244,8 @@
     .tag { color: #AAAAAA; }
     h1, h2 {font-weight: bold}
     #title_panel { display: block}
-    .result-row { overflow-x: auto; white-space: nowrap; height:20px;}
-    .result-row::-webkit-scrollbar { display: none; }
+    .result-row { overflow-x: hidden /* change to auto if horizontal scrolling is needed */; white-space: nowrap; height:20px; }
+    .result-row::-webkit-scrollbar { display: none; overflow: -moz-scrollbars-none;}
     .panel-title { font-size: 1.3em !important; font-family:Verdana, Charcoal, sans-serif !important; font-weight:
     bold; }
     .top_level_panel { height: 90%; overflow : hidden; padding-bottom: 20px;}
